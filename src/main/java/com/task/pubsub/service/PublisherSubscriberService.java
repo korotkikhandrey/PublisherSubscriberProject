@@ -11,6 +11,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Service for publishing-subscribing logic.
+ */
 @Service
 public class PublisherSubscriberService {
 
@@ -23,6 +26,9 @@ public class PublisherSubscriberService {
 
     private int counter = 0;
 
+    /**
+     * Adds message to the queue.
+     */
     @Scheduled(fixedDelay = 5000)
     public void addMessageToQueue() {
         String messageStr = generateMessage();
@@ -48,5 +54,9 @@ public class PublisherSubscriberService {
 
     public void broadcastMessage() {
 
+    }
+
+    public List<Message> getAllMessages() {
+        return messageRepository.findAll();
     }
 }
