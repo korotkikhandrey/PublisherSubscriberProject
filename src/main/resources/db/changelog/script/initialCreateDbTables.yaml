@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: InitialDB_Create
+      author: akorotki
+      changes:
+        - createSequence:
+            sequenceName: seq_id
+        - createTable:
+            tableName: message
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: message
+                  type: VARCHAR(1000)
+                  constraints:
+                    nullable: false
+              - column:
+                  defaultValue: CURRENT_TIMESTAMP()
+                  name: create_date
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            columnNames: id
+            constraintName: pk_message_id
+            tableName: message
