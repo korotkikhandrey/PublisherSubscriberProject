@@ -6,6 +6,29 @@ databaseChangeLog:
         - createSequence:
             sequenceName: seq_id
         - createTable:
+            tableName: subscriber
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  defaultValue: CURRENT_TIMESTAMP()
+                  name: create_date
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            columnNames: id
+            constraintName: pk_subscriber_id
+            tableName: subscriber
+        - createTable:
             tableName: message
             columns:
               - column:
@@ -19,6 +42,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: subscriber_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
                   defaultValue: CURRENT_TIMESTAMP()
                   name: create_date
                   type: TIMESTAMP
@@ -28,3 +56,9 @@ databaseChangeLog:
             columnNames: id
             constraintName: pk_message_id
             tableName: message
+        - addForeignKeyConstraint:
+            baseColumnNames: subscriber_id
+            baseTableName: message
+            constraintName: fk_message_subscriber
+            referencedColumnNames: id
+            referencedTableName: subscriber

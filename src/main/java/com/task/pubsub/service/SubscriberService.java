@@ -2,18 +2,16 @@ package com.task.pubsub.service;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
 @Getter
 @Setter
-public class Subscriber {
+public class SubscriberService {
 
     private String name;
 
-    public Subscriber(String name) {
+    public SubscriberService(String name) {
         this.name = name;
     }
 
@@ -21,7 +19,7 @@ public class Subscriber {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Subscriber that = (Subscriber) o;
+        SubscriberService that = (SubscriberService) o;
         return name.equals(that.name);
     }
 
