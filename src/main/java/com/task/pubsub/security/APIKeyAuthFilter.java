@@ -4,6 +4,9 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Security configuration auth filter.
+ */
 public class APIKeyAuthFilter extends AbstractPreAuthenticatedProcessingFilter {
 
     private String principalRequestHeader;

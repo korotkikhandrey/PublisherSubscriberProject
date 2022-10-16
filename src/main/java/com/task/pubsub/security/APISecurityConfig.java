@@ -12,6 +12,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Security Configuration. API key is used for each endpoint.
+ */
 @Configuration
 @EnableWebSecurity
 public class APISecurityConfig {
@@ -40,7 +43,10 @@ public class APISecurityConfig {
         http.antMatcher("/pubsub/**").
                 csrf().disable().
                 sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
-                and().addFilter(filter).authorizeRequests().anyRequest().authenticated();
+                and().addFilter(filter)
+                .authorizeRequests()
+                .anyRequest()
+                .authenticated();
 
         return http.build();
     }
