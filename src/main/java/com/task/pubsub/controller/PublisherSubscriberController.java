@@ -13,14 +13,14 @@ import java.util.List;
  * Rest controller for publishing - subscribing process.
  */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/pubsub")
 public class PublisherSubscriberController {
 
     @Autowired
     private PublisherSubscriberService publisherSubscriberService;
 
     /**
-     * Endpoint for adding messages to the queue.
+     * Service for adding messages to the queue.
      * @param message
      */
     @PostMapping("/addMessageToQueue")
@@ -65,6 +65,11 @@ public class PublisherSubscriberController {
         return publisherSubscriberService.getAllMessagesFromDB();
     }
 
+    /**
+     * Gets all the messages for the subscriber.
+     * @param id
+     * @return List of {@link Message}
+     */
     @GetMapping(value = "/getAllMessagesForSubscriber/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public List<Message> getAllMessagesForSubscriber(@PathVariable Long id) {

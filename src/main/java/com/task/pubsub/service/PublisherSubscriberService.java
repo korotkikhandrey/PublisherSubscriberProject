@@ -53,41 +53,55 @@ public class PublisherSubscriberService {
         return "Some message " + ++counter;
     }
 
+    /**
+     * Adds subscriber.
+     * @param subscriber
+     */
     public void addSubscriber(Subscriber subscriber) {
         subscriberRepository.save(subscriber);
         log.info("Subscriber with id {} has been created!", subscriber.getId());
     }
 
+    /**
+     * Removes subscriber by id.
+     * @param id
+     */
     public void removeSubscriber(Long id) {
         Optional<Subscriber> subscriberOpt = subscriberRepository.findById(id);
         if (subscriberOpt.isPresent()) {
             Subscriber subscriber = subscriberOpt.get();
-            //List<Message> messageList = messageRepository.findMessagesBySubscriber(subscriber);
             messageRepository.removeMessagesBySubscriber(subscriber);
             subscriberRepository.delete(subscriber);
             log.info("Subscriber with id {} has been deleted!", id);
         }
     }
 
+    /**
+     * Broadcasting all the messages from the queue.
+     */
     public void broadcastMessages() {
         List<Subscriber> subscriberList = getAllSubscribers();
         if (CollectionUtils.isEmpty(subscriberList)) {
             log.info("There are no any subscribers!");
         } else {
             if (messageQueue.isEmpty()) {
-                System.out.println("Queue is empty!");
+                log.info("Queue is empty!");
             } else {
                 int size = messageQueue.size();
-
+                log.info("Messages with amount {} are about to be broadcasted...", size);
                 while(!messageQueue.isEmpty()) {
                     handleMessageFromQueue(subscriberList);
                 }
-                log.info("Broadcast has been done for {} messages!", size);
+                log.info("Broadcast has been done for {} messages", size);
             }
         }
 
     }
 
+    /**
+     * Due to absence of topic message is assigned to particular subscriber in a random way.
+     * @param subscriberList
+     */
     @Transactional(rollbackFor = Exception.class)
     public void handleMessageFromQueue(List<Subscriber> subscriberList) {
         String message = messageQueue.remove();
@@ -101,8 +115,6 @@ public class PublisherSubscriberService {
 
     /**
      * Gets the random subscriber.
-     * Due to topics absence the messages will be distributed randomly within the existing subscribers.
-     *
      * @return {@link Subscriber}
      */
     public Subscriber getRandomSubscriber(List<Subscriber> givenList) {
