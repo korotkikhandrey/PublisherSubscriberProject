@@ -36,9 +36,17 @@ public class PublisherSubscriberService {
      * Adds message to the queue.
      */
     @Scheduled(fixedDelay = 5000)
-    public void addMessageToQueue() {
+    public void addMessageToQueueScheduled() {
         String messageStr = generateMessage();
         messageQueue.add(messageStr);
+    }
+
+    /**
+     * Adds message to the queue via endpoint
+     * @param message
+     */
+    public void addMessageToQueue(String message) {
+        messageQueue.add(message);
     }
 
     private String generateMessage() {

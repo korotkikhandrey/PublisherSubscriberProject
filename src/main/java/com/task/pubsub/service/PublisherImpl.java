@@ -12,6 +12,6 @@ public class PublisherImpl implements Publisher {
 
     @Override
     public void publish(String message) {
-        publisherSubscriberService.addMessageToQueue();
+        publisherSubscriberService.addMessageToQueue(message);
     }
 }

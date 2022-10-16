@@ -20,6 +20,14 @@ public class PublisherSubscriberController {
     private PublisherSubscriberService publisherSubscriberService;
 
     /**
+     * Endpoint for adding messages to the queue.
+     * @param message
+     */
+    @PostMapping("/addMessageToQueue")
+    public void addMessageToQueue(@RequestBody String message) {
+        publisherSubscriberService.addMessageToQueue(message);
+    }
+    /**
      * Creates the subscriber.
      * @param subscriberName
      */
@@ -43,7 +51,7 @@ public class PublisherSubscriberController {
     /**
      * Broadcast all the messages.
      */
-    @GetMapping("/broadcastMessages")
+    @PostMapping("/broadcastMessages")
     public void broadcastMessages() {
         publisherSubscriberService.broadcastMessages();
     }
