@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Test for {@link PublisherSubscriberController}
  */
 @WebMvcTest
-public class PublisherSubscriberControllerTest {
+public class PublisherSubscriberControllerNotAuthorizedTest {
 
     @MockBean
     private MessageRepository messageRepository;

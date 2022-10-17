@@ -48,7 +48,6 @@ public class PublisherSubscriberController {
      * @param subscriberName
      */
     @PostMapping(value = "/addSubscriber",
-                 consumes = MediaType.APPLICATION_JSON_VALUE,
                  produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public void addSubscriber(@RequestHeader(name = "apikey") String apikey,
