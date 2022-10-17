@@ -5,7 +5,6 @@ import com.task.pubsub.entity.Subscriber;
 import com.task.pubsub.repository.MessageRepository;
 import com.task.pubsub.repository.SubscriberRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,7 +12,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Queue;
+import java.util.Random;
+import java.util.Set;
 
 import static com.task.pubsub.utils.PubSubUtils.getPagingSort;
 
@@ -28,12 +33,14 @@ public class PublisherSubscriberService {
 
     private Set<Subscriber> subscribers = new HashSet<>();
 
-    @Autowired
-    private MessageRepository messageRepository;
+    private final MessageRepository messageRepository;
 
-    @Autowired
-    private SubscriberRepository subscriberRepository;
+    private final SubscriberRepository subscriberRepository;
 
+    public PublisherSubscriberService(MessageRepository messageRepository, SubscriberRepository subscriberRepository) {
+        this.messageRepository = messageRepository;
+        this.subscriberRepository = subscriberRepository;
+    }
     private int counter = 0;
 
     /**
@@ -157,8 +164,6 @@ public class PublisherSubscriberService {
         return pageMsgs;
     }
 
-
-
     /**
      * Gets all messages for the subscriber.
      * @param id
@@ -173,5 +178,9 @@ public class PublisherSubscriberService {
         }
 
         return pageMsgs;
+    }
+
+    public Queue<String> getMessageQueue() {
+        return messageQueue;
     }
 }

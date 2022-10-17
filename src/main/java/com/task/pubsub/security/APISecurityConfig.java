@@ -1,8 +1,10 @@
 package com.task.pubsub.security;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,6 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
  */
 @Configuration
 @EnableWebSecurity
+@Slf4j
 public class APISecurityConfig {
 
     @Value("${pubsub.http.auth-token-header-name}")
@@ -34,16 +37,19 @@ public class APISecurityConfig {
             public Authentication authenticate(Authentication authentication) throws AuthenticationException {
                 String principal = (String) authentication.getPrincipal();
                 if (!principalRequestValue.equals(principal)) {
-                    throw new BadCredentialsException("The API key was not found or not the expected value.");
+                    String errMsg = "The API key was not found or not the expected value.";
+                    log.error(errMsg);
+                    throw new BadCredentialsException(errMsg);
                 }
                 authentication.setAuthenticated(true);
                 return authentication;
             }
         });
         http.antMatcher("/pubsub/**").
-                csrf().disable().
-                sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
-                and().addFilter(filter)
+                csrf().disable()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().addFilter(filter)
                 .authorizeRequests()
                 .anyRequest()
                 .authenticated();

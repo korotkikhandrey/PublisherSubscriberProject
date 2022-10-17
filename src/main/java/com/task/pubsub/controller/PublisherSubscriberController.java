@@ -2,16 +2,24 @@ package com.task.pubsub.controller;
 
 import com.task.pubsub.entity.Message;
 import com.task.pubsub.service.PublisherSubscriberService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import static com.task.pubsub.utils.PubSubUtils.getMapResponseEntity;
 
 /**
  * Rest controller for publishing - subscribing process.
@@ -20,8 +28,11 @@ import java.util.Map;
 @RequestMapping(value = "/pubsub")
 public class PublisherSubscriberController {
 
-    @Autowired
-    private PublisherSubscriberService publisherSubscriberService;
+    private final PublisherSubscriberService publisherSubscriberService;
+
+    public PublisherSubscriberController(PublisherSubscriberService publisherSubscriberService) {
+        this.publisherSubscriberService = publisherSubscriberService;
+    }
 
     /**
      * Service for adding messages to the queue.
@@ -75,17 +86,7 @@ public class PublisherSubscriberController {
                                                               @RequestParam(defaultValue = "id,desc") String sort) {
         try {
             Page<Message> messagePage = publisherSubscriberService.getAllMessagesFromDB(page, size, sort);
-            Map<String, Object> response = new HashMap<>();
-            List<Message> messageList = messagePage.getContent();
-            if (messageList.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            response.put("messages", messagePage.getContent());
-            response.put("currentPage", messagePage.getNumber());
-            response.put("totalItems", messagePage.getTotalElements());
-            response.put("totalPages", messagePage.getTotalPages());
-            return new ResponseEntity<>(response, HttpStatus.OK);
-
+            return getMapResponseEntity(messagePage);
         } catch (Exception exception) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -107,17 +108,7 @@ public class PublisherSubscriberController {
 
         try {
             Page<Message> messagePage = publisherSubscriberService.getAllMessagesForSubscriber(page, size, sort, id);
-            Map<String, Object> response = new HashMap<>();
-            List<Message> messageList = messagePage.getContent();
-            if (messageList.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            response.put("messages", messagePage.getContent());
-            response.put("currentPage", messagePage.getNumber());
-            response.put("totalItems", messagePage.getTotalElements());
-            response.put("totalPages", messagePage.getTotalPages());
-            return new ResponseEntity<>(response, HttpStatus.OK);
-
+            return getMapResponseEntity(messagePage);
         } catch (Exception exception) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

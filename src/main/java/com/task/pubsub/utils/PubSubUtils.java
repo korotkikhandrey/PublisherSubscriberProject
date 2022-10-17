@@ -1,11 +1,18 @@
 package com.task.pubsub.utils;
 
+import com.task.pubsub.entity.Message;
+import liquibase.repackaged.org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utils class
@@ -20,6 +27,9 @@ public class PubSubUtils {
      * @return {@link Pageable}
      */
     public static Pageable getPagingSort(int page, int size, String sortStr) {
+        if (StringUtils.isEmpty(sortStr) || size == 0) {
+            return  PageRequest.of(page, size);
+        }
         String[] sort = sortStr.split("&");
         List<Sort.Order> orders = new ArrayList<>();
         if (sort[0].contains(",")) {
@@ -51,6 +61,25 @@ public class PubSubUtils {
         }
 
         return Sort.Direction.ASC;
+    }
+
+    /**
+     * Creates ResponseEntity for paged and sorted messages.
+     * @param messagePage
+     * @return {@link ResponseEntity}
+     */
+    public static ResponseEntity<Map<String, Object>> getMapResponseEntity(Page<Message> messagePage) {
+        Map<String, Object> response = new HashMap<>();
+        List<Message> messageList = messagePage.getContent();
+        if (!messageList.isEmpty()) {
+            response.put("messages", messagePage.getContent());
+            response.put("currentPage", messagePage.getNumber());
+            response.put("totalItems", messagePage.getTotalElements());
+            response.put("totalPages", messagePage.getTotalPages());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 
 }
