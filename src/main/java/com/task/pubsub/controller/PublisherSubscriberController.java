@@ -1,14 +1,17 @@
 package com.task.pubsub.controller;
 
 import com.task.pubsub.entity.Message;
-import com.task.pubsub.entity.Subscriber;
 import com.task.pubsub.service.PublisherSubscriberService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Rest controller for publishing - subscribing process.
@@ -38,7 +41,7 @@ public class PublisherSubscriberController {
                  produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public void addSubscriber(@RequestHeader(name = "apikey") String apikey,
-                              @RequestBody Subscriber subscriberName) {
+                              @RequestBody String subscriberName) {
         publisherSubscriberService.addSubscriber(subscriberName);
     }
 
@@ -65,8 +68,27 @@ public class PublisherSubscriberController {
      */
     @GetMapping(value = "/getAllMessages", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public List<Message> getAllMessages(@RequestHeader(name = "apikey") String apikey) {
-        return publisherSubscriberService.getAllMessagesFromDB();
+    public ResponseEntity<Map<String, Object>> getAllMessages(@RequestHeader(name = "apikey") String apikey,
+                                                              @RequestParam(defaultValue = "0") int page,
+                                                              @RequestParam(defaultValue = "3") int size,
+                                                              // should be used string like 'message,desc&createDate,asc&...' for sorting and direction
+                                                              @RequestParam(defaultValue = "id,desc") String sort) {
+        try {
+            Page<Message> messagePage = publisherSubscriberService.getAllMessagesFromDB(page, size, sort);
+            Map<String, Object> response = new HashMap<>();
+            List<Message> messageList = messagePage.getContent();
+            if (messageList.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            response.put("messages", messagePage.getContent());
+            response.put("currentPage", messagePage.getNumber());
+            response.put("totalItems", messagePage.getTotalElements());
+            response.put("totalPages", messagePage.getTotalPages());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
+        } catch (Exception exception) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -76,8 +98,28 @@ public class PublisherSubscriberController {
      */
     @GetMapping(value = "/getAllMessagesForSubscriber/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public List<Message> getAllMessagesForSubscriber(@RequestHeader(name = "apikey") String apikey,
+    public ResponseEntity<Map<String, Object>> getAllMessagesForSubscriber(@RequestHeader(name = "apikey") String apikey,
+                                                     @RequestParam(defaultValue = "0") int page,
+                                                     @RequestParam(defaultValue = "3") int size,
+                                                     // should be used string like 'message,desc&createDate,asc&...' for sorting and direction
+                                                     @RequestParam(defaultValue = "id,desc") String sort,
                                                      @PathVariable Long id) {
-        return publisherSubscriberService.getAllMessagesForSubscriber(id);
+
+        try {
+            Page<Message> messagePage = publisherSubscriberService.getAllMessagesForSubscriber(page, size, sort, id);
+            Map<String, Object> response = new HashMap<>();
+            List<Message> messageList = messagePage.getContent();
+            if (messageList.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            response.put("messages", messagePage.getContent());
+            response.put("currentPage", messagePage.getNumber());
+            response.put("totalItems", messagePage.getTotalElements());
+            response.put("totalPages", messagePage.getTotalPages());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
+        } catch (Exception exception) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

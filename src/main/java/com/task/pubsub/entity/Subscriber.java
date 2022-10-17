@@ -5,15 +5,11 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Message entity class.
@@ -29,9 +25,6 @@ public class Subscriber extends AbstractEntity {
     @NotNull
     @Column(name="name")
     private String name;
-
-/*  @OneToMany(mappedBy = "subscriber", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Message> messageList;*/
 
     @Override
     public boolean equals(Object o) {

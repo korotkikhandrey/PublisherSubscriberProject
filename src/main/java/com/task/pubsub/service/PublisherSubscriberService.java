@@ -6,12 +6,16 @@ import com.task.pubsub.repository.MessageRepository;
 import com.task.pubsub.repository.SubscriberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+
+import static com.task.pubsub.utils.PubSubUtils.getPagingSort;
 
 /**
  * Service for publishing-subscribing logic.
@@ -33,7 +37,7 @@ public class PublisherSubscriberService {
     private int counter = 0;
 
     /**
-     * Adds message to the queue.
+     * Adds message to the queue. The alias of Publisher in the system.
      */
     @Scheduled(fixedDelay = 5000)
     public void addMessageToQueueScheduled() {
@@ -50,14 +54,16 @@ public class PublisherSubscriberService {
     }
 
     private String generateMessage() {
-        return "Some message " + ++counter;
+        return "Some payload information " + ++counter;
     }
 
     /**
      * Adds subscriber.
-     * @param subscriber
+     * @param subscriberName
      */
-    public void addSubscriber(Subscriber subscriber) {
+    public void addSubscriber(String subscriberName) {
+        Subscriber subscriber = new Subscriber();
+        subscriber.setName(subscriberName);
         subscriberRepository.save(subscriber);
         log.info("Subscriber with id {} has been created!", subscriber.getId());
     }
@@ -105,12 +111,15 @@ public class PublisherSubscriberService {
     @Transactional(rollbackFor = Exception.class)
     public void handleMessageFromQueue(List<Subscriber> subscriberList) {
         String message = messageQueue.remove();
+        log.debug("Message {} has been removed from queue. ", message);
         Message msg = new Message();
         msg.setMessage(message);
 
         Subscriber subscriber =  getRandomSubscriber(subscriberList);
         msg.setSubscriber(subscriber);
+        log.debug("Message {} is about to be saved into DB. ", msg);
         messageRepository.save(msg);
+        log.debug("Message {} has been saved into DB. ", msg);
     }
 
     /**
@@ -135,25 +144,34 @@ public class PublisherSubscriberService {
      * @return
      */
     public List<Subscriber> getAllSubscribers() {
-        return subscriberRepository.findAll();
+        return (List<Subscriber>) subscriberRepository.findAll();
     }
 
     /**
      * Gets all the Messages from DB.
      * @return
      */
-    public List<Message> getAllMessagesFromDB() {
-        return messageRepository.findAll();
+    public Page<Message> getAllMessagesFromDB(int page, int size, String sortStr) throws Exception {
+        Pageable pagingSort = getPagingSort(page, size, sortStr);
+        Page<Message> pageMsgs = messageRepository.findAll(pagingSort);
+        return pageMsgs;
     }
 
-    public List<Message> getAllMessagesForSubscriber(Long id) {
 
-        //todo: refactor it!!!!
+
+    /**
+     * Gets all messages for the subscriber.
+     * @param id
+     * @return List of {@link Message}
+     */
+    public Page<Message> getAllMessagesForSubscriber(int page, int size, String sortStr, Long id) {
+        Pageable pagingSort = getPagingSort(page, size, sortStr);
+        Page<Message> pageMsgs = Page.empty();
         Optional<Subscriber> subscriber = subscriberRepository.findById(id);
         if (subscriber.isPresent()) {
-            return messageRepository.findMessagesBySubscriber(subscriber.get());
+            pageMsgs = messageRepository.findMessagesBySubscriber(pagingSort, subscriber.get());
         }
 
-        return Collections.EMPTY_LIST;
+        return pageMsgs;
     }
 }

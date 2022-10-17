@@ -1,16 +1,12 @@
 package com.task.pubsub.entity;
 
 import com.sun.istack.NotNull;
-import lombok.*;
-import org.hibernate.annotations.*;
-
-
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -46,4 +42,11 @@ public class Message extends AbstractEntity {
         return Objects.hash(message, subscriber);
     }
 
+    @Override
+    public String toString() {
+        return "Message{" +
+                "message='" + message + '\'' +
+                ", subscriber=" + subscriber +
+                '}';
+    }
 }
