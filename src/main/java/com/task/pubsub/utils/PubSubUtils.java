@@ -1,7 +1,7 @@
 package com.task.pubsub.utils;
 
 import com.task.pubsub.entity.Message;
-import liquibase.repackaged.org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,9 +43,7 @@ public class PubSubUtils {
             // sort=[field, direction]
             orders.add(new Sort.Order(getSortDirection(sort[1]), sort[0]));
         }
-
-        Pageable pagingSort = PageRequest.of(page, size, Sort.by(orders));
-        return pagingSort;
+        return PageRequest.of(page, size, Sort.by(orders));
     }
 
     /**
