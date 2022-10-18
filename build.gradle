@@ -19,6 +19,24 @@ repositories {
 	mavenCentral()
 }
 
+//todo - fix unsecure
+task dropAllTruncate {
+	def username = 'root'
+	def password = 's3cr3t_PWD951!'
+	def hostname = 'localhost'
+	def port = '3306'
+	def database = 'pubsubdb'
+	def sql = 	'DROP TABLE IF EXISTS message;' +
+				'DROP TABLE IF EXISTS subscriber;' +
+				'TRUNCATE TABLE databasechangelog;' +
+				'TRUNCATE TABLE databasechangeloglock;'
+
+	def cmd = "mysql -u ${username} -p${password} -h ${hostname} -P ${port} ${database} -e "
+	project.exec {
+		commandLine = cmd.split().toList() + sql
+	}
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'

@@ -3,8 +3,6 @@ databaseChangeLog:
       id: InitialDB_Create
       author: akorotki
       changes:
-        - createSequence:
-            sequenceName: seq_id
         - createTable:
             tableName: subscriber
             columns:
@@ -27,6 +25,11 @@ databaseChangeLog:
         - addPrimaryKey:
             columnNames: id
             constraintName: pk_subscriber_id
+            tableName: subscriber
+        - addAutoIncrement:
+            columnName: id
+            columnDataType: BIGINT
+            startWith: 1
             tableName: subscriber
         - createTable:
             tableName: message
@@ -55,6 +58,11 @@ databaseChangeLog:
         - addPrimaryKey:
             columnNames: id
             constraintName: pk_message_id
+            tableName: message
+        - addAutoIncrement:
+            columnName: id
+            columnDataType: BIGINT
+            startWith: 1
             tableName: message
         - addForeignKeyConstraint:
             baseColumnNames: subscriber_id
