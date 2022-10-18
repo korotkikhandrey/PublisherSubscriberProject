@@ -44,28 +44,10 @@ import static org.mockito.Mockito.when;
 public class PublisherSubscriberControllerAuthorizedTest {
 
     @MockBean
-    private MessageRepository messageRepository;
-
-    @MockBean
-    private SubscriberRepository subscriberRepository;
-
-    @MockBean
     private PublisherSubscriberService publisherSubscriberService;
-
-    @SpyBean
-    private PublisherSubscriberController publisherSubscriberController;
-
-    @Autowired
-    private WebApplicationContext context;
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    SecurityFilterChain filterChain;
-
-    @SpyBean
-    APISecurityConfig apiSecurityConfig;
 
     /**
      * Tests that in case of there are some messages in DB, they will be returned with code 200.

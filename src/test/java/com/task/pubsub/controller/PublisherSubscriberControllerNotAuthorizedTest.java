@@ -22,12 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class PublisherSubscriberControllerNotAuthorizedTest {
 
     @MockBean
-    private MessageRepository messageRepository;
-
-    @MockBean
-    private SubscriberRepository subscriberRepository;
-
-    @MockBean
     private PublisherSubscriberService publisherSubscriberService;
 
     @SpyBean
